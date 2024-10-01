@@ -1,0 +1,5 @@
+- servlet is the technology which is used to create the web applications
+- Servlet is an API that provides many interface and classes including documentation.
+-Servlet is an interface that must be implemented for creating any Servlet.
+- Servlet is the class that extends a capabilitiesnif the servers and responds to the inciming request it can respojnde to any request.
+- Servlet  is a web component that is deployed on the server to create a dynamic web page.
