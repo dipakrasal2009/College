@@ -23,4 +23,4 @@ from sklearn.naive_bayes import GaussianNB
 classifier = GaussianNB()
 classifier.fit(features,label)
 predicted= classifier.predict([[0,2]]) # 0:Overcast, 2:Mild #1:yes, 0:no
-print("Predicted value:",predicted)
+print("Predicted value:",predicted)t

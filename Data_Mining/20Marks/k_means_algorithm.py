@@ -7,7 +7,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 # Load the dataset (you can change the path as per your local file)
-url = 'https://github.com/tarunlnmiit/machine_learning/blob/master/DataPreprocessing.csv'
+url = 'https://github.com/tarunlnmiit/machine_learning/blob/master/DataPreprocessing.csvtt'
 data = pd.read_csv(url)
 
 # Display the first few rows of the dataset
