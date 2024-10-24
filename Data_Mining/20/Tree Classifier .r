@@ -1,0 +1,48 @@
+Write a Python program build Decision Tree Classifier for shows.csvfrom pandas and
+predict class label for show starring a 40 years old American comedian, with 10
+years of experience, and a comedy ranking of 7? Create a csv file as shown in
+https://www.w3schools.com/python/python_ml_decision_tree.asp
+
+
+
+
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+# Step 1: Create and save the dataset as "shows.csv"
+data = {
+    "Age": [35, 40, 45, 50, 55],
+    "Experience": [10, 12, 14, 16, 18],
+    "Rank": [8, 6, 5, 7, 6],
+    "Nationality": ["UK", "USA", "N", "USA", "N"],
+    "Go": ["Yes", "No", "No", "Yes", "No"]
+}
+
+df = pd.DataFrame(data)
+df.to_csv("shows.csv", index=False)
+
+# Step 2: Load the dataset
+df = pd.read_csv("shows.csv")
+print("Dataset Head:")
+print(df.head())
+
+# Step 3: Preprocess the data
+# Convert categorical column "Nationality" to numeric
+df['Nationality'] = df['Nationality'].map({'UK': 0, 'USA': 1, 'N': 2})
+
+# Define features (X) and target (y)
+X = df[['Age', 'Experience', 'Rank', 'Nationality']]  # Features
+y = df['Go']  # Target
+
+# Step 4: Build the Decision Tree Classifier
+model = DecisionTreeClassifier()
+model.fit(X, y)
+
+# Step 5: Make a prediction for a 40-year-old American comedian with 10 years of experience and a ranking of 7
+input_data = [[40, 10, 7, 1]]  # Age: 40, Experience: 10, Rank: 7, Nationality: USA (1)
+prediction = model.predict(input_data)
+
+# Step 6: Display the prediction
+print("\nPrediction for a 40-year-old American comedian with 10 years of experience and a ranking of 7:")
+print(f"Class label prediction: {prediction[0]}")
+

@@ -1,0 +1,45 @@
+Write a Python program to build an SVM model to Cancer dataset. The dataset is
+available in the scikit-learn library. Check the accuracy of model with precision and
+recall.
+
+
+
+import numpy as np
+import pandas as pd
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Step 1: Load the Cancer dataset
+cancer = datasets.load_breast_cancer()
+X = cancer.data  # Features
+y = cancer.target  # Target variable (0: malignant, 1: benign)
+
+# Step 2: Split the data into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 3: Create and train the SVM model
+svm_model = SVC(kernel='linear', random_state=42)  # Using a linear kernel
+svm_model.fit(X_train, y_train)
+
+# Step 4: Make predictions
+y_pred = svm_model.predict(X_test)
+
+# Step 5: Evaluate the model's performance
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+
+# Print the evaluation metrics
+print("Model Evaluation Metrics:")
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+
+# Additional evaluation: Confusion matrix and classification report
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))

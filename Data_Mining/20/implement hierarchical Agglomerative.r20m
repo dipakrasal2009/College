@@ -1,0 +1,50 @@
+Write a python program to implement hierarchical Agglomerative clustering algorithm.
+(Download Customer.csv dataset from github.com).
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.preprocessing import StandardScaler
+
+# Step 1: Load the dataset (replace the URL with the actual GitHub URL of the dataset)
+url = 'https://raw.githubusercontent.com/path-to-your-dataset/Customer.csv'
+data = pd.read_csv(url)
+
+# Step 2: Check the dataset (optional)
+print(data.head())
+
+# Step 3: Select features for clustering (e.g., selecting two features for simplicity)
+# Replace 'Annual Income (k$)' and 'Spending Score (1-100)' with the actual column names in your dataset
+X = data[['Annual Income (k$)', 'Spending Score (1-100)']]
+
+# Step 4: Feature scaling (optional, but recommended for clustering algorithms)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 5: Perform hierarchical clustering using Agglomerative Clustering
+# Create the linkage matrix for dendrogram
+linked = linkage(X_scaled, method='ward')
+
+# Step 6: Plot the dendrogram
+plt.figure(figsize=(10, 7))
+dendrogram(linked, orientation='top', distance_sort='descending', show_leaf_counts=True)
+plt.title('Dendrogram for Hierarchical Clustering')
+plt.xlabel('Customers')
+plt.ylabel('Euclidean Distances')
+plt.show()
+
+# Step 7: Fit the Agglomerative Clustering model
+# Choose the number of clusters (e.g., 5 clusters in this case)
+cluster = AgglomerativeClustering(n_clusters=5, affinity='euclidean', linkage='ward')
+y_cluster = cluster.fit_predict(X_scaled)
+
+# Step 8: Plot the clusters
+plt.figure(figsize=(10, 7))
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=y_cluster, cmap='rainbow')
+plt.title('Agglomerative Clustering (Hierarchical)')
+plt.xlabel('Annual Income (scaled)')
+plt.ylabel('Spending Score (scaled)')
+plt.show()

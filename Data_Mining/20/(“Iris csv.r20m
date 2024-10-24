@@ -1,0 +1,40 @@
+Write a Python Programme to read the dataset (“Iris.csv”). dataset download from
+(https://archive.ics.uci.edu/ml/datasets/iris) and apply Apriori algorithm.
+
+
+
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+import numpy as np
+
+# Step 1: Load the Iris dataset
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
+column_names = ["SepalLength", "SepalWidth", "PetalLength", "PetalWidth", "Species"]
+iris_data = pd.read_csv(url, header=None, names=column_names)
+
+# Step 2: Convert continuous features into categorical features
+# We will categorize based on quantiles for simplicity
+iris_data['SepalLength_cat'] = pd.qcut(iris_data['SepalLength'], q=3, labels=["Short", "Medium", "Long"])
+iris_data['SepalWidth_cat'] = pd.qcut(iris_data['SepalWidth'], q=3, labels=["Narrow", "Medium", "Wide"])
+iris_data['PetalLength_cat'] = pd.qcut(iris_data['PetalLength'], q=3, labels=["Short", "Medium", "Long"])
+iris_data['PetalWidth_cat'] = pd.qcut(iris_data['PetalWidth'], q=3, labels=["Narrow", "Medium", "Wide"])
+
+# Step 3: Create a new DataFrame for Apriori
+# We need to create a binary matrix for the Apriori algorithm
+# One-hot encoding the categorical features
+apriori_data = pd.get_dummies(iris_data[['SepalLength_cat', 'SepalWidth_cat', 
+                                           'PetalLength_cat', 'PetalWidth_cat', 'Species']], 
+                               prefix='', prefix_sep='')
+
+# Step 4: Apply the Apriori algorithm
+frequent_itemsets = apriori(apriori_data, min_support=0.1, use_colnames=True)
+
+# Step 5: Generate the association rules
+rules = association_rules(frequent_itemsets, metric="support", min_threshold=0.1)
+
+# Step 6: Display results
+print("Frequent Itemsets:")
+print(frequent_itemsets)
+
+print("\nAssociation Rules:")
+print(rules)

@@ -1,0 +1,47 @@
+Write a python program to implement hierarchical clustering algorithm.(Download
+Wholesale customers data dataset from github.com).
+
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
+
+# Step 1: Load the Wholesale Customers dataset
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/wholesale-customers.csv"
+column_names = ['Channel', 'Region', 'Fresh', 'Milk', 'Grocery', 'Frozen', 'Detergents_Paper', 'Delicassen']
+data = pd.read_csv(url, header=0, names=column_names)
+
+# Step 2: Preprocess the dataset
+# Drop the 'Channel' and 'Region' columns since they are categorical
+data = data.drop(['Channel', 'Region'], axis=1)
+
+# Step 3: Apply Hierarchical Clustering
+# Standardize the data (optional, but often beneficial)
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+data_scaled = scaler.fit_transform(data)
+
+# Perform hierarchical clustering using the 'ward' method
+Z = linkage(data_scaled, method='ward')
+
+# Step 4: Visualize the clusters using a dendrogram
+plt.figure(figsize=(12, 8))
+dendrogram(Z, truncate_mode='level', p=5)
+plt.title('Hierarchical Clustering Dendrogram')
+plt.xlabel('Sample index')
+plt.ylabel('Distance')
+plt.show()
+
+# Step 5: Form clusters
+# You can specify a threshold to cut the dendrogram
+threshold = 30  # You can adjust this value based on the dendrogram
+clusters = fcluster(Z, threshold, criterion='distance')
+
+# Step 6: Add the cluster labels to the original dataset
+data['Cluster'] = clusters
+
+# Print the first few rows of the clustered data
+print(data.head())
