@@ -3094,3 +3094,396 @@ void main()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+9. Consider the following graph 
+
+
+The numbers written on edges represent the distance between the nodes. The numbers written on nodes represent the heuristic value. 
+
+
+Answer : 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define N 10  // Number of nodes (A-J)
+#define INF INT_MAX
+
+// Graph edges and heuristic values (as seen in the image)
+int graph[N][N] = {
+    {0, 8, INF, 10, INF, 3, INF, INF, INF, INF}, // A
+    {8, 0, 5, INF, 5, INF, INF, INF, INF, INF},  // B
+    {INF, 5, 0, 3, INF, INF, INF, INF, INF, INF}, // C
+    {10, INF, 3, 0, 3, INF, INF, INF, INF, INF}, // D
+    {INF, 5, INF, 3, 0, INF, INF, 3, INF, INF},  // E
+    {3, INF, INF, INF, INF, 0, 6, INF, INF, INF}, // F
+    {INF, INF, INF, INF, INF, 6, 0, INF, 3, INF}, // G
+    {INF, INF, INF, INF, 3, INF, INF, 0, 1, 2},  // H
+    {INF, INF, INF, INF, INF, INF, 3, 1, 0, 3},  // I
+    {INF, INF, INF, INF, INF, INF, INF, 2, 3, 0}  // J
+};
+
+// Heuristic values for nodes A to J
+int heuristic[N] = {10, 8, 5, 7, 3, 6, 5, 3, 1, 0};
+
+// Structure for a priority queue node
+typedef struct {
+    int node;
+    int f_score;
+} PQNode;
+
+// Priority queue for the A* algorithm
+typedef struct {
+    PQNode *data;
+    int size;
+    int capacity;
+} PriorityQueue;
+
+PriorityQueue* createQueue(int capacity) {
+    PriorityQueue *pq = (PriorityQueue*)malloc(sizeof(PriorityQueue));
+    pq->data = (PQNode*)malloc(capacity * sizeof(PQNode));
+    pq->size = 0;
+    pq->capacity = capacity;
+    return pq;
+}
+
+void enqueue(PriorityQueue *pq, int node, int f_score) {
+    PQNode newNode = {node, f_score};
+    pq->data[pq->size++] = newNode;
+    int i = pq->size - 1;
+    while (i > 0 && pq->data[i].f_score < pq->data[(i - 1) / 2].f_score) {
+        PQNode temp = pq->data[i];
+        pq->data[i] = pq->data[(i - 1) / 2];
+        pq->data[(i - 1) / 2] = temp;
+        i = (i - 1) / 2;
+    }
+}
+
+int dequeue(PriorityQueue *pq) {
+    if (pq->size == 0) return -1;
+    int minNode = pq->data[0].node;
+    pq->data[0] = pq->data[--pq->size];
+    int i = 0;
+    while (2 * i + 1 < pq->size) {
+        int j = 2 * i + 1;
+        if (j + 1 < pq->size && pq->data[j + 1].f_score < pq->data[j].f_score) j++;
+        if (pq->data[i].f_score <= pq->data[j].f_score) break;
+        PQNode temp = pq->data[i];
+        pq->data[i] = pq->data[j];
+        pq->data[j] = temp;
+        i = j;
+    }
+    return minNode;
+}
+
+int a_star(int start, int goal) {
+    int g_score[N];
+    int f_score[N];
+    int came_from[N];
+    int visited[N] = {0};
+    
+    for (int i = 0; i < N; i++) {
+        g_score[i] = INF;
+        f_score[i] = INF;
+        came_from[i] = -1;
+    }
+    g_score[start] = 0;
+    f_score[start] = heuristic[start];
+    
+    PriorityQueue *pq = createQueue(N);
+    enqueue(pq, start, f_score[start]);
+    
+    while (pq->size > 0) {
+        int current = dequeue(pq);
+        if (current == goal) {
+            printf("Path: ");
+            int node = goal;
+            while (node != -1) {
+                printf("%c ", 'A' + node);
+                node = came_from[node];
+            }
+            printf("\nTotal Cost: %d\n", g_score[goal]);
+            return g_score[goal];
+        }
+        
+        visited[current] = 1;
+        
+        for (int neighbor = 0; neighbor < N; neighbor++) {
+            if (graph[current][neighbor] != INF && !visited[neighbor]) {
+                int tentative_g_score = g_score[current] + graph[current][neighbor];
+                if (tentative_g_score < g_score[neighbor]) {
+                    came_from[neighbor] = current;
+                    g_score[neighbor] = tentative_g_score;
+                    f_score[neighbor] = g_score[neighbor] + heuristic[neighbor];
+                    enqueue(pq, neighbor, f_score[neighbor]);
+                }
+            }
+        }
+    }
+    
+    printf("Path not found!\n");
+    return INF;
+}
+
+int main() {
+    int start = 0; // Node A
+    int goal = 9;  // Node J
+    a_star(start, goal);
+    return 0;
+}
+
+
+
+
+
+
+
+
+11. Implement AO* algorithm in C /python for following graph and find out minimum cost solution. 
+
+Answer:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define N 6 // Number of nodes (A-F)
+#define INF INT_MAX
+
+// Graph edges as adjacency matrix with costs
+int graph[N][N] = {
+    {INF, 4, 8, 5, INF, INF}, // A
+    {INF, INF, 2, INF, INF, INF}, // B
+    {INF, INF, INF, 2, 2, INF}, // C
+    {INF, INF, INF, INF, INF, 8}, // D
+    {INF, INF, INF, INF, INF, 4}, // E
+    {INF, INF, INF, INF, INF, INF}  // F (goal node)
+};
+
+// Cost values for each node, initialized to INF
+int cost[N];
+int parent[N];
+
+// AO* Algorithm Function
+int AOStar(int node) {
+    if (node == 5) {  // If node is the goal node F
+        cost[node] = 0;
+        return cost[node];
+    }
+
+    int minCost = INF;
+    int selectedChild = -1;
+
+    // Explore children nodes
+    for (int child = 0; child < N; child++) {
+        if (graph[node][child] != INF) {  // If there's an edge from node to child
+            int childCost = graph[node][child] + AOStar(child);
+            if (childCost < minCost) {
+                minCost = childCost;
+                selectedChild = child;
+            }
+        }
+    }
+
+    if (selectedChild != -1) {
+        cost[node] = minCost;
+        parent[node] = selectedChild;
+    }
+
+    return cost[node];
+}
+
+// Function to display the solution path
+void displayPath(int start) {
+    printf("Solution Path: ");
+    int node = start;
+    while (node != -1) {
+        printf("%c ", 'A' + node);
+        node = parent[node];
+    }
+    printf("\n");
+}
+
+int main() {
+    // Initialize costs and parent array
+    for (int i = 0; i < N; i++) {
+        cost[i] = INF;
+        parent[i] = -1;
+    }
+
+    // Start AO* from node A (index 0)
+    int startNode = 0;
+    int minCost = AOStar(startNode);
+
+    printf("Minimum Cost: %d\n", minCost);
+    displayPath(startNode);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+16. Given an initial state of a 8-puzzle problem and final state to be reached
+
+
+ Find the most cost-effective path to reach the final state from initial state using A* Algorithm in C/Python.
+
+Answer:
+
+import heapq
+import copy
+
+# Define the goal state
+goal_state = [
+    [1, 2, 3],
+    [8, 0, 4],
+    [7, 6, 5]
+]
+
+# Moves: up, down, left, right
+moves = [
+    (-1, 0),  # up
+    (1, 0),   # down
+    (0, -1),  # left
+    (0, 1)    # right
+]
+
+# Calculate Manhattan distance
+def manhattan_distance(state):
+    distance = 0
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] != 0:
+                target_x, target_y = divmod(state[i][j] - 1, 3)
+                distance += abs(target_x - i) + abs(target_y - j)
+    return distance
+
+# Find the position of the blank tile (0)
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+    return -1, -1
+
+# Check if the given state is the goal state
+def is_goal(state):
+    return state == goal_state
+
+# Print the puzzle state
+def print_state(state):
+    for row in state:
+        print(" ".join(str(cell) for cell in row))
+    print()
+
+# A* Algorithm for solving 8-puzzle
+def a_star(initial_state):
+    # Priority queue to hold states to be explored
+    priority_queue = []
+    # Initialize g(n) and f(n)
+    g = {str(initial_state): 0}
+    f = {str(initial_state): manhattan_distance(initial_state)}
+    # Push the initial state into the priority queue
+    heapq.heappush(priority_queue, (f[str(initial_state)], initial_state, []))
+
+    # Visited states to avoid cycles
+    visited = set()
+    visited.add(str(initial_state))
+
+    while priority_queue:
+        # Pop the state with the lowest f(n)
+        _, current_state, path = heapq.heappop(priority_queue)
+
+        # Check if we reached the goal
+        if is_goal(current_state):
+            print("Reached the goal!")
+            print("Solution path:")
+            for step in path:
+                print_state(step)
+            return path
+
+        # Find the position of the blank tile
+        blank_x, blank_y = find_blank(current_state)
+
+        # Explore all possible moves
+        for move in moves:
+            new_x, new_y = blank_x + move[0], blank_y + move[1]
+
+            # Check if the move is within bounds
+            if 0 <= new_x < 3 and 0 <= new_y < 3:
+                # Create a new state by swapping the blank tile
+                new_state = copy.deepcopy(current_state)
+                new_state[blank_x][blank_y], new_state[new_x][new_y] = new_state[new_x][new_y], new_state[blank_x][blank_y]
+
+                # Convert new state to string for hashing
+                new_state_str = str(new_state)
+
+                # Calculate g(n) and f(n) for the new state
+                new_g = g[str(current_state)] + 1
+                new_f = new_g + manhattan_distance(new_state)
+
+                # If this new state has not been visited or found a better path
+                if new_state_str not in visited or new_g < g.get(new_state_str, float('inf')):
+                    visited.add(new_state_str)
+                    g[new_state_str] = new_g
+                    f[new_state_str] = new_f
+                    # Add the new state to the priority queue
+                    heapq.heappush(priority_queue, (new_f, new_state, path + [new_state]))
+
+    # If no solution found
+    print("No solution found.")
+    return None
+
+# Initial state of the puzzle
+initial_state = [
+    [2, 8, 3],
+    [1, 6, 4],
+    [7, 0, 5]
+]
+
+# Run A* to solve the puzzle
+a_star(initial_state)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
