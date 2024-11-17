@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #4CA1AF, #2C3E50);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.todo-app {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #2C3E50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h1 i {
+    color: #4CA1AF;
+}
+
+.input-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+}
+
+button {
+    background: #4CA1AF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #2C3E50;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.filter-btn {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.filter-btn.active {
+    background: #4CA1AF;
+    color: white;
+}
+
+#taskList {
+    list-style: none;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: #f9f9f9;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.task-item:hover {
+    background: #f0f0f0;
+}
+
+.task-item.completed {
+    opacity: 0.7;
+}
+
+.task-item.completed span {
+    text-decoration: line-through;
+    color: #666;
+}
+
+.task-item input[type="checkbox"] {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+}
+
+.task-item span {
+    flex: 1;
+}
+
+.delete-btn {
+    background: transparent;
+    color: #ff5555;
+    padding: 5px 10px;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+#taskCount {
+    color: #666;
+}
+
+#clearCompleted {
+    background: #ff5555;
+}
+
+#clearCompleted:hover {
+    background: #ff3333;
+} 
