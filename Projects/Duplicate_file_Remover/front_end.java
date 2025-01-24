@@ -1,10 +1,6 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.border.*;
 import java.io.*;
 import java.util.LinkedList;
-
+why
 public class front_end extends JFrame implements ActionListener {
     private DefaultListModel<String> model;
     private JList<String> l1;
@@ -17,8 +13,53 @@ public class front_end extends JFrame implements ActionListener {
     private JMenu menu1;
     private JMenuItem menu2;
     private JFrame splash;
+    private TrayIcon trayIcon;
+    private SystemTray tray;
 
     front_end() {
+        if (SystemTray.isSupported()) {
+            try {
+                tray = SystemTray.getSystemTray();
+                // Make sure to place your icon.png in the project directory
+                Image image = new ImageIcon(getClass().getResource("/icon.png")).getImage();
+                
+                PopupMenu popup = new PopupMenu();
+                MenuItem openItem = new MenuItem("Open");
+                openItem.addActionListener(e -> showSplashAndMain());
+                
+                MenuItem exitItem = new MenuItem("Exit");
+                exitItem.addActionListener(e -> {
+                    tray.remove(trayIcon);
+                    System.exit(0);
+                });
+                
+                popup.add(openItem);
+                popup.addSeparator();
+                popup.add(exitItem);
+                
+                trayIcon = new TrayIcon(image, "Duplicate File Remover", popup);
+                trayIcon.setImageAutoSize(true);
+                trayIcon.addActionListener(e -> showSplashAndMain());
+                
+                tray.add(trayIcon);
+                
+                // Start minimized
+                setVisible(false);
+                
+            } catch (AWTException e) {
+                System.err.println("Tray icon could not be added: " + e.getMessage());
+                // If tray icon fails, show window normally
+                showSplashAndMain();
+            }
+        } else {
+            System.err.println("System tray is not supported");
+            showSplashAndMain();
+        }
+
+        initializeComponents();
+    }
+
+    private void initializeComponents() {
         splash = new JFrame("Welcome!");
         splash.setBounds(100, 100, 700, 250);
 
@@ -131,4 +172,3 @@ public class front_end extends JFrame implements ActionListener {
         SwingUtilities.invokeLater(() -> new front_end());
     }
 }
-
