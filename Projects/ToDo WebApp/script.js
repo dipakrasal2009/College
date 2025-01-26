@@ -10,6 +10,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
+    // New global variables
+    let pomodoroTimer;
+    let pomodoroTime = 25 * 60; // 25 minutes
+    const totalTimeSpan = document.getElementById('totalTime');
+    const completedCountSpan = document.getElementById('completedCount');
+    const sortTasksSelect = document.getElementById('sortTasks');
+    const exportTasksBtn = document.getElementById('exportTasks');
+    const startPomodoroBtn = document.getElementById('startPomodoro');
+    const pomodoroModal = document.getElementById('pomodoroModal');
+    const pomodoroTimeDisplay = document.getElementById('pomodoroTime');
+
     function saveTasks() {
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
@@ -118,6 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTaskCount();
         });
 
+        // Add category and priority indicators
+        const taskInfo = document.createElement('div');
+        taskInfo.className = 'task-info';
+        taskInfo.innerHTML = `
+            ${task.category ? `<span class="task-category">${task.category}</span>` : ''}
+            <span class="task-priority ${task.priority}">${task.priority}</span>
+            ${task.scheduledDate ? `<span class="task-schedule">
+                <i class="far fa-calendar"></i> 
+                ${new Date(task.scheduledDate).toLocaleString()}
+            </span>` : ''}
+        `;
+        li.insertBefore(taskInfo, li.querySelector('.timer-container'));
+
+        // Add notes toggle
+        if (task.notes) {
+            const notesBtn = document.createElement('button');
+            notesBtn.className = 'notes-btn';
+            notesBtn.innerHTML = '<i class="far fa-sticky-note"></i>';
+            notesBtn.addEventListener('click', () => {
+                alert(task.notes);
+            });
+            li.querySelector('.button-group').appendChild(notesBtn);
+        }
+
         return li;
     }
 
@@ -179,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'Enter') {
             addBtn.click(); // Add new task
+        } else if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            startPomodoroBtn.click(); // Start Pomodoro
         }
     });
 
@@ -192,7 +230,100 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('activeTimers', JSON.stringify(activeTimers));
     });
 
+    // Task statistics functions
+    function updateStatistics() {
+        const totalMinutes = tasks.reduce((acc, task) => acc + task.duration, 0);
+        const completedTasks = tasks.filter(task => task.completed).length;
+        
+        totalTimeSpan.textContent = `${totalMinutes} min total`;
+        completedCountSpan.textContent = `${completedTasks} completed`;
+        updateTaskCount();
+    }
+
+    // Sort tasks function
+    function sortTasks(sortBy) {
+        switch(sortBy) {
+            case 'priority':
+                tasks.sort((a, b) => {
+                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                });
+                break;
+            case 'duration':
+                tasks.sort((a, b) => b.duration - a.duration);
+                break;
+            case 'scheduled':
+                tasks.sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate));
+                break;
+        }
+        renderTasks();
+    }
+
+    // Export tasks function
+    function exportTasks() {
+        const exportData = {
+            tasks: tasks,
+            exportDate: new Date().toISOString(),
+            statistics: {
+                totalTasks: tasks.length,
+                completedTasks: tasks.filter(task => task.completed).length,
+                totalTime: tasks.reduce((acc, task) => acc + task.duration, 0)
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tasks-export-${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Pomodoro timer functions
+    function updatePomodoroDisplay(timeLeft) {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        pomodoroTimeDisplay.textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function startPomodoro() {
+        if (pomodoroTimer) clearInterval(pomodoroTimer);
+        
+        pomodoroTimer = setInterval(() => {
+            pomodoroTime--;
+            updatePomodoroDisplay(pomodoroTime);
+            
+            if (pomodoroTime <= 0) {
+                clearInterval(pomodoroTimer);
+                document.getElementById('pomodoroComplete').play();
+                alert('Pomodoro session completed! Take a break.');
+                pomodoroTime = 25 * 60;
+                updatePomodoroDisplay(pomodoroTime);
+            }
+        }, 1000);
+    }
+
+    // Event Listeners
+    sortTasksSelect.addEventListener('change', (e) => {
+        sortTasks(e.target.value);
+    });
+
+    exportTasksBtn.addEventListener('click', exportTasks);
+
+    startPomodoroBtn.addEventListener('click', () => {
+        pomodoroModal.style.display = 'block';
+    });
+
+    document.querySelector('.close-modal').addEventListener('click', () => {
+        pomodoroModal.style.display = 'none';
+    });
+
     // Initial render
     renderTasks();
     updateTaskCount();
+    updateStatistics();
 }); 

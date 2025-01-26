@@ -213,4 +213,116 @@ button:hover {
 
 .task-item.completed .progress {
     background: #9e9e9e;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat i {
+    color: #4CAF50;
+}
+
+.task-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.task-info {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.task-category {
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+.task-priority {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    color: white;
+}
+
+.task-priority.high { background: #dc3545; }
+.task-priority.medium { background: #ffc107; }
+.task-priority.low { background: #28a745; }
+
+.task-schedule {
+    color: #6c757d;
+    font-size: 0.8em;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.pomodoro-timer {
+    text-align: center;
+    padding: 20px;
+}
+
+#pomodoroTime {
+    font-size: 48px;
+    font-family: monospace;
+}
+
+.pomodoro-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .task-input-group {
+        flex-direction: column;
+    }
+    
+    .stats-container {
+        flex-direction: column;
+        gap: 10px;
+    }
 } 
