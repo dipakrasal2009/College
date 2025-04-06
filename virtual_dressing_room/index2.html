@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Virtual Dressing Room</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+  <style>
+    body {
+      text-align: center;
+      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      border: 2px solid black;
+      margin-top: 20px;
+    }
+    .controls {
+      margin: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>👕 Virtual Dressing Room 👕</h1>
+
+  <div class="controls">
+    <label>Upload Your Photo:
+      <input type="file" id="userImageInput" accept="image/*">
+    </label>
+    <br><br>
+    <label>Upload Shirt Image:
+      <input type="file" id="shirtImageInput" accept="image/*">
+    </label>
+    <br><br>
+    <button id="saveButton">Save New Image</button>
+  </div>
+
+  <canvas id="canvas" width="400" height="600"></canvas>
+
+  <script>
+    const canvas = new fabric.Canvas('canvas');
+
+    // Load user's body photo
+    document.getElementById('userImageInput').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function(f) {
+        fabric.Image.fromURL(f.target.result, function(img) {
+          img.scaleToWidth(canvas.width);
+          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+            scaleX: canvas.width / img.width,
+            scaleY: canvas.height / img.height
+          });
+        });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    });
+
+    // Load shirt image
+    document.getElementById('shirtImageInput').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function(f) {
+        fabric.Image.fromURL(f.target.result, function(img) {
+          img.scale(0.5);
+          img.set({
+            left: canvas.width/2 - img.width/4,
+            top: canvas.height/3,
+            hasRotatingPoint: true,
+            cornerStyle: 'circle',
+            transparentCorners: false
+          });
+          canvas.add(img);
+        });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    });
+
+    // Save button functionality
+    document.getElementById('saveButton').addEventListener('click', function() {
+      // remove active selection before saving (optional for cleaner image)
+      canvas.discardActiveObject();
+      canvas.renderAll();
+
+      const dataURL = canvas.toDataURL({
+        format: 'png',
+        quality: 1.0
+      });
+
+      // Create a download link
+      const link = document.createElement('a');
+      link.href = dataURL;
+      link.download = 'virtual-dress.png';
+      link.click();
+    });
+  </script>
+
+</body>
+</html>
+
