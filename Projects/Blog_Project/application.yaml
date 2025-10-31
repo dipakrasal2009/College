@@ -18,7 +18,7 @@ spec:
         - name: myapp-container
           image: dipakrasal2009/blog:v1  # 🔹 Replace with your Docker image
           ports:
-            - containerPort: 80  # 🔹 Change if your app runs on another port
+            - containerPort: 5000  # 🔹 Change if your app runs on another port
 
 ---
 apiVersion: v1
@@ -31,7 +31,7 @@ spec:
     app: myapp
   ports:
     - protocol: TCP
-      port: 80          # 🔹 Service port
-      targetPort: 80    # 🔹 Container port
+      port: 5000          # 🔹 Service port
+      targetPort: 5000    # 🔹 Container port
       nodePort: 30080   # 🔹 External port (accessible via <NodeIP>:30080)
 
